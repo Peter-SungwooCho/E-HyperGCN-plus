@@ -12,14 +12,19 @@ def load(args):
 
     current = os.path.abspath(inspect.getfile(inspect.currentframe()))
     Dir, _ = os.path.split(current)
-    file = os.path.join(Dir, args.data, args.dataset, "splits", str(args.split) + ".pickle")
+    # file = os.path.join(Dir, args.data, args.dataset, "splits", str(args.split) + ".pickle")
 
+    file = os.path.join(Dir, args.data, args.dataset, "train_labels.pickle")
     if not os.path.isfile(file): print("split + ", str(args.split), "does not exist")
     with open(file, 'rb') as H: 
-        Splits = pickle.load(H)
-        train, test = Splits['train'], Splits['test']
+        train = pickle.load(H)
+        
+    file = os.path.join(Dir, args.data, args.dataset, "valid_labels.pickle")
+    if not os.path.isfile(file): print("split + ", str(args.split), "does not exist")
+    with open(file, 'rb') as H: 
+        valid = pickle.load(H)
 
-    return dataset, train, test
+    return dataset, train, valid
 
 
 
