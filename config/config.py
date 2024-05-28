@@ -53,7 +53,7 @@ decay = 0.0005
 
 import configargparse, os,sys,inspect
 from configargparse import YAMLConfigFileParser
-
+import datetime
 
 
 def parse():
@@ -76,6 +76,8 @@ def parse():
 	p.add('--gpu', type=int, default=gpu, help='gpu number to use')
 	p.add('--cuda', type=bool, default=cuda, help='cuda for gpu')
 	p.add('--seed', type=int, default=seed, help='seed for randomness')
+	p.add('--result', type=str, default=f'{datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}', help='result name')
+	p.add('--features', type=str, default='features', help='feature name')
 	p.add('-f') # for jupyter default
 	return p.parse_args()
 

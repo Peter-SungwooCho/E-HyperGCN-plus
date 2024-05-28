@@ -8,7 +8,7 @@ def load(args):
     """
     parses the dataset
     """
-    dataset = parser(args.data, args.dataset).parse()
+    dataset = parser(args.data, args.dataset, args.features).parse()
 
     current = os.path.abspath(inspect.getfile(inspect.currentframe()))
     Dir, _ = os.path.split(current)
@@ -33,7 +33,7 @@ class parser(object):
     an object for parsing data
     """
     
-    def __init__(self, data, dataset):
+    def __init__(self, data, dataset, features):
         """
         initialises the data directory 
 
@@ -45,7 +45,7 @@ class parser(object):
         current = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
         self.d = os.path.join(current, data, dataset)
         self.data, self.dataset = data, dataset
-
+        self.features = features
     
 
     def parse(self):
@@ -76,8 +76,9 @@ class parser(object):
             hypergraph = pickle.load(handle)
             print("number of hyperedges is", len(hypergraph))
 
-        with open(os.path.join(self.d, 'features.pickle'), 'rb') as handle:
+        with open(os.path.join(self.d, f'{self.features}.pickle'), 'rb') as handle:
             features = pickle.load(handle).todense()
+            print(f"feature is {self.features}.pickle")
 
         with open(os.path.join(self.d, 'labels.pickle'), 'rb') as handle:
             labels = self._1hot(pickle.load(handle))

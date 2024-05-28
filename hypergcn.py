@@ -32,6 +32,13 @@ HyperGCN = model.initialise(dataset, args)
 
 
 # train and test HyperGCN
-HyperGCN = model.train(HyperGCN, dataset, train, args)
+HyperGCN = model.train(HyperGCN, dataset, train, test, args)
+
+torch.save(HyperGCN['model'].state_dict(), f'{args.result}-last model.pth')
+
 acc = model.test(HyperGCN, dataset, test, args)
 print("accuracy:", float(acc), ", error:", float(100*(1-acc)))
+
+f= open(f'{args.result}-vaild_acc.txt',"w+")
+f.write(f"accuracy: {float(acc)} , error: {float(100*(1-acc))}")
+f.close()

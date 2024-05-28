@@ -8,7 +8,7 @@ from model import utils
 
 
 
-def train(HyperGCN, dataset, T, args):
+def train(HyperGCN, dataset, T, t, args):
     """
     train for a certain number of epochs
 
@@ -35,6 +35,11 @@ def train(HyperGCN, dataset, T, args):
 
         loss.backward()
         optimiser.step()
+
+        if epoch % 10 == 0:
+            acc = test(HyperGCN, dataset, t, args)
+            print("epoch:", epoch, "loss:", float(loss), "accuracy:", float(acc), ", error:", float(100*(1-acc)))
+            torch.save(HyperGCN['model'].state_dict(), f'{args.result}-{epoch}.pth')
 
     HyperGCN['model'] = hypergcn
     return HyperGCN
