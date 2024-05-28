@@ -19,7 +19,7 @@ Source code for [NeurIPS 2019](https://nips.cc/) paper: [**HyperGCN: A New Metho
 
   ```shell
   <!-- python hypergcn.py --mediators True --split 1 --data coauthorship --dataset dblp -->
-  python hypergcn.py --mediators True --split 1 --data etail --dataset ours --features w2v_concat
+  CUDA_VISIBLE_DEVICES=1 python hypergcn.py --mediators True --split 1 --data etail --dataset ours --features w2v_concat --rate 0.01 --result w2c_concat_0.01
   ```
 
   - `--mediators` denotes whether to use mediators (True) or not (False) 
