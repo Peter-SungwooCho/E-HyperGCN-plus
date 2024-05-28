@@ -4,7 +4,7 @@ import torch.nn as nn, torch.nn.functional as F, torch.nn.init as init
 from torch.autograd import Variable
 from torch.nn.modules.module import Module
 from torch.nn.parameter import Parameter
-
+import numpy as np
 
 
 class HyperGraphConvolution(Module):
@@ -211,7 +211,10 @@ def symnormalise(M):
     """
     
     d = np.array(M.sum(1))
-    
+
+    eps = np.finfo(float).eps
+    d[d <= 0] = eps
+
     dhi = np.power(d, -1/2).flatten()
     dhi[np.isinf(dhi)] = 0.
     DHI = sp.diags(dhi)    # D half inverse i.e. D^{-1/2}

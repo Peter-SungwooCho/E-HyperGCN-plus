@@ -40,7 +40,11 @@ def train(HyperGCN, dataset, T, t, args):
             acc = test(HyperGCN, dataset, t, args)
             print("epoch:", epoch, "loss:", float(loss), "accuracy:", float(acc), ", error:", float(100*(1-acc)))
             torch.save(HyperGCN['model'].state_dict(), f'{args.result}-{epoch}.pth')
-
+            
+            f= open(f'{args.result}-vaild_acc.txt',"a")
+            f.write(f"\nepoch: {epoch}, loss: {float(loss)}, accuracy: {float(acc)} , error: {float(100*(1-acc))}")
+            f.close()
+            
     HyperGCN['model'] = hypergcn
     return HyperGCN
 
@@ -111,8 +115,8 @@ def initialise(dataset, args):
     else:
         learnable_emb = nn.Embedding(V, 2000)
         X = learnable_emb.weight
-        
-
+    
+    print(f"rate : {args.rate}")
     # hypergcn and optimiser
     args.d, args.c = X.shape[1], Y.shape[1]
     hypergcn = networks.HyperGCN(V, E, X, args)
