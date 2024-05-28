@@ -5,7 +5,7 @@ import torch.optim as optim, torch.nn.functional as F
 from torch.autograd import Variable
 from tqdm import tqdm
 from model import utils
-
+import torch.nn as nn
 
 
 def train(HyperGCN, dataset, T, t, args):
@@ -103,7 +103,15 @@ def initialise(dataset, args):
     
     HyperGCN = {}
     V, E = dataset['n'], dataset['hypergraph']
-    X, Y = dataset['features'], dataset['labels']
+    Y = dataset['labels']
+    
+    if dataset['features'] is not None:
+        X = dataset['features']
+        
+    else:
+        learnable_emb = nn.Embedding(V, 2000)
+        X = learnable_emb.weight
+        
 
     # hypergcn and optimiser
     args.d, args.c = X.shape[1], Y.shape[1]
@@ -112,8 +120,16 @@ def initialise(dataset, args):
 
 
     # node features in sparse representation
-    X = sp.csr_matrix(normalise(np.array(X)), dtype=np.float32)
-    X = torch.FloatTensor(np.array(X.todense()))
+    if args.features == 'learnable':
+        X = sp.csr_matrix(normalise(np.array(X.detach().numpy())), dtype=np.float32)
+        
+        X_np = np.array(X.todense())
+        X = torch.tensor(X_np, dtype=torch.float32, requires_grad=True)
+
+        
+    else:
+        X = sp.csr_matrix(normalise(np.array(X)), dtype=np.float32)
+        X = torch.FloatTensor(np.array(X.todense()))
     
     # labels
     Y = np.array(Y)
