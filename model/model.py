@@ -170,8 +170,9 @@ def normalise(M):
     
     d = np.array(M.sum(1))
     
-    di = np.power(d, -1).flatten()
+    epsilon = 1e-10 
+    di = np.power(d+epsilon, -1).flatten()
     di[np.isinf(di)] = 0.
     DI = sp.diags(di)    # D inverse i.e. D^{-1}
-    
+
     return DI.dot(M)

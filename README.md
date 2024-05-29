@@ -21,7 +21,9 @@ Source code for [NeurIPS 2019](https://nips.cc/) paper: [**HyperGCN: A New Metho
   <!-- python hypergcn.py --mediators True --split 1 --data coauthorship --dataset dblp -->
  python hypergcn.py --mediators True --split 1 --data etail --dataset ours --features w2v_concat --rate 0.01 --result w2c_concat_0.01 --gpu 1
  
- python hypergcn.py --mediators True --split 1 --data etail --dataset ours --features learnable --rate 0.01 --result w2c_concat_0.01 --gpu 1
+ python hypergcn.py --mediators True --split 1 --data etail --dataset ours --features rand_onehot --rate 0.01 --result rand_0.01_fast --gpu 1 --fast True --epoch 1000
+
+ python hypergcn.py --mediators True --split 1 --data etail --dataset ours --features bow_svd_cp --rate 0.01 --result bow_0.01_fast --gpu 0 --fast True --epoch 1000
   ```
 
   - `--mediators` denotes whether to use mediators (True) or not (False) 
