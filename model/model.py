@@ -99,9 +99,8 @@ def test(HyperGCN, dataset, t, args):
     Z = hypergcn(X) 
 
     pred_dict = {}
-    breakpoint()
     for tid in t:
-        pred_dict[tid] = (Z[tid].argmax().item(), max(torch.exp(Z[tid])).item())
+        pred_dict[tid] = (Z[tid].argmax().item(), torch.exp(Z[tid]))
         
     return pred_dict
 

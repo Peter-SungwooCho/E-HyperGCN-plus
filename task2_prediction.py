@@ -5,6 +5,7 @@ from scipy.stats import truncnorm
 import pickle
 import pandas as pd
 from sklearn.metrics import roc_auc_score
+import torch.nn.functional as F
 
 from config import config
 args = config.parse()
@@ -84,7 +85,25 @@ for l in total_basket_lb:
 #     return bsk_return
     
 def bsk_return_pred(order):
-    return basket_pred[int(order)][1]
+    prob = basket_pred[int(order)][1]
+
+#     return prob[2].item()
+# AUC Score: 0.524217290561405
+# accuracy: 0.48533530029504424
+
+#     return prob[1].item()
+# AUC Score: 0.5606571876950731
+# accuracy: 0.4880357053558034
+
+#     return prob[2].item() + (0.5 * prob[1].item())
+# AUC Score: 0.5615265855585243
+# accuracy: 0.48555783367505123
+
+    return prob[2].item() + prob[1].item()
+# AUC Score: 0.562575022417739
+# accuracy: 0.5073936090413562
+
+    # return (0.5 * prob[2].item()) + prob[1].item()
 
 def prd_return_pred(product):
     order_list = hypergraph[int(product)]
@@ -114,12 +133,20 @@ correct_sample = 0
 for l in line:
     info = l.strip().split("\t")
     order, product, return_gt = info[0], info[1], info[2]
-    pred = bsk_return_pred(int(order)) * prd_return_pred(int(product))
+    
+    bsk_return_prob = bsk_return_pred(int(order))
+    prod_return_prob = prd_return_pred(int(product))
+
+    pred_1 = bsk_return_prob * prod_return_prob
+    pred_0 = (1-bsk_return_prob) * (1-prod_return_prob)
+
+    preds = [pred_0, pred_1]
+    preds = F.softmax(torch.tensor(preds), dim=0)
 
     y_test.append(int(return_gt))
-    y_pred_prob.append(pred) # TODO : ??
+    y_pred_prob.append(preds[1].item()) # TODO : ??
 
-    if pred >= 0.5:
+    if preds[1].item() >= 0.5:
         pred_label = 1
     else:
         pred_label = 0
