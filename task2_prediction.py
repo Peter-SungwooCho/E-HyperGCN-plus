@@ -114,7 +114,8 @@ def prd_return_pred(product):
         if basket[int(order)] == 2:
             return_bsk += 1
         elif basket[int(order)] == 1:
-            return_bsk += bsk_return_pred(int(order)) #TODO
+            # return_bsk += bsk_return_pred(int(order)) #TODO
+            return_bsk += 1
         else:
             pass
             
@@ -133,23 +134,33 @@ correct_sample = 0
 for l in line:
     info = l.strip().split("\t")
     order, product, return_gt = info[0], info[1], info[2]
-    
-    bsk_return_prob = bsk_return_pred(int(order))
-    prod_return_prob = prd_return_pred(int(product))
 
-    pred_1 = bsk_return_prob * prod_return_prob
-    pred_0 = (1-bsk_return_prob) * (1-prod_return_prob)
-
-    preds = [pred_0, pred_1]
-    preds = F.softmax(torch.tensor(preds), dim=0)
+    pred = bsk_return_pred(int(order)) * prd_return_pred(int(product))
 
     y_test.append(int(return_gt))
-    y_pred_prob.append(preds[1].item()) # TODO : ??
+    y_pred_prob.append(pred) # TODO : ??
 
-    if preds[1].item() >= 0.5:
+    if pred >= 0.5:
         pred_label = 1
     else:
         pred_label = 0
+        
+    # bsk_return_prob = bsk_return_pred(int(order))
+    # prod_return_prob = prd_return_pred(int(product))
+
+    # pred_1 = bsk_return_prob * prod_return_prob
+    # pred_0 = (1-bsk_return_prob) + bsk_return_prob * (1-prod_return_prob)
+
+    # preds = [pred_0, pred_1]
+    # preds = F.softmax(torch.tensor(preds), dim=0)
+
+    # y_test.append(int(return_gt))
+    # y_pred_prob.append(preds[1].item()) # TODO : ??
+
+    # if preds[1].item() >= 0.5:
+    #     pred_label = 1
+    # else:
+    #     pred_label = 0
     
     if int(return_gt) == pred_label:
         correct_sample += 1
@@ -161,8 +172,11 @@ accuary = correct_sample / total_sample
 print(f"AUC Score: {auc_score}")
 print(f"accuracy: {accuary}")
 
+with open(f"{args.result}_y_test.pickle", 'wb') as f:
+    pickle.dump(y_test, f)
 
-
+with open(f"{args.result}_y_pred_prob.pickle", 'wb') as f:
+    pickle.dump(y_pred_prob, f)
 
 # start predict label
 print("================== save test prediction ================")
