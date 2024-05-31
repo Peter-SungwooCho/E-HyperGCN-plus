@@ -163,7 +163,6 @@ if do_PCA == False:
     with open("etail/ours/clustering_onehot.pickle", 'wb') as f:
         pickle.dump(output, f)
 
-    breakpoint()
 
 else:
     final_df = df if two_step_clustering == False else df_2
@@ -209,4 +208,8 @@ else:
     with open(f"etail/ours/clustering_onehot_pca_{memo}.pickle", 'wb') as f:
         pickle.dump(output, f)
     
-    breakpoint()
+
+import os
+os.makedirs('./tmp', exist_ok=True)
+final_df.to_csv(f'./tmp/task1_data_clustered_{memo}.csv', index=False)
+breakpoint()
