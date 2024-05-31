@@ -24,7 +24,12 @@ def load(args):
     with open(file, 'rb') as H: 
         valid = pickle.load(H)
 
-    return dataset, train, valid
+    file = os.path.join(Dir, args.data, args.dataset, "test_labels.pickle")
+    if not os.path.isfile(file): print("split + ", str(args.split), "does not exist")
+    with open(file, 'rb') as H: 
+        test = pickle.load(H)
+
+    return dataset, train, valid, test
 
 
 
