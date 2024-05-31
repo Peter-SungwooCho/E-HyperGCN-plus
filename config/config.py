@@ -78,6 +78,7 @@ def parse():
 	p.add('--seed', type=int, default=seed, help='seed for randomness')
 	p.add('--result', type=str, default=f'{datetime.datetime.now().strftime("%Y-%m-%d-%H-%M-%S")}', help='result name')
 	p.add('--features', type=str, default='features', help='feature name')
+	p.add('--task', type=int, default='1', help='task1 / task2')
 	p.add('-f') # for jupyter default
 	return p.parse_args()
 

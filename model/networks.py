@@ -35,18 +35,37 @@ class HyperGCN(nn.Module):
         self.do, self.l = args.dropout, args.depth
         self.structure, self.m = structure, args.mediators
 
-
+        # self.linear = nn.Sequential(*[nn.Linear(d, 64),
+        #                               nn.ReLU(),
+        #                               nn.Linear(64, 64),
+        #                               nn.ReLU(),
+        #                               nn.Linear(64, d)])
 
     def forward(self, H):
         """
         an l-layer GCN
         """
         do, l, m = self.do, self.l, self.m
-        
+        # H = self.linear(H)  
+    
         for i, hidden in enumerate(self.layers):
             H = F.relu(hidden(self.structure, H, m))
             if i < l - 1:
                 V = H
                 H = F.dropout(H, do, training=self.training)
-        
-        return F.log_softmax(H, dim=1)
+
+        # 각 행의 평균, 표준편차 계산
+        epsilon = 1e-10
+        mean_vals = H.mean(dim=1, keepdim=True)
+        std_vals = H.std(dim=1, keepdim=True) + epsilon
+
+        # Z-정규화
+        H_normalized = (H - mean_vals) / std_vals
+
+        return F.log_softmax(H_normalized, dim=1)
+    
+        # return F.log_softmax(H, dim=1)
+
+
+        return F.softmax(H, dim=1)
+   

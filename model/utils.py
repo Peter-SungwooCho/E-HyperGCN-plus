@@ -212,9 +212,11 @@ def symnormalise(M):
     
     d = np.array(M.sum(1))
 
-    eps = np.finfo(float).eps
-    d[d <= 0] = eps
-
+    # eps = np.finfo(float).eps
+    # d[d <= 0] = eps
+    epsilon = 1e-10 
+    d[d <= 0] = epsilon
+    
     dhi = np.power(d, -1/2).flatten()
     dhi[np.isinf(dhi)] = 0.
     DHI = sp.diags(dhi)    # D half inverse i.e. D^{-1/2}

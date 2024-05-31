@@ -28,7 +28,15 @@ Source code for [NeurIPS 2019](https://nips.cc/) paper: [**HyperGCN: A New Metho
 
   - `--mediators` denotes whether to use mediators (True) or not (False) 
   - `--split` is the train-test split number
-  
+python hypergcn.py --mediators True --split 1 --data etail --dataset ours --features clustering_onehot --rate 0.05 --result clus_0.05_task1 --gpu 3 --fast True --epoch 1000 --task 1
+
+python hypergcn.py --mediators True --split 1 --data etail --dataset ours2 --features clustering_onehot --rate 0.05 --result clus_0.05_task2 --gpu 3 --fast True --epoch 1000 --task 2
+
+python task2_prediction.py --mediators True --split 1 --data etail --dataset ours2 --features clustering_onehot --rate 0.05 --result clus_0.05_task2 --gpu 3 --fast True --epoch 300 --task 2
+```
+
+
+
 
 ### Citation:
 

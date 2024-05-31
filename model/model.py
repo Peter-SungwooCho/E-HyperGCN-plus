@@ -7,8 +7,8 @@ from tqdm import tqdm
 from model import utils
 import torch.nn as nn
 
-
-def train(HyperGCN, dataset, T, t, args):
+import pdb
+def train(HyperGCN, dataset, T, v, t, args):
     """
     train for a certain number of epochs
 
@@ -27,6 +27,7 @@ def train(HyperGCN, dataset, T, t, args):
     
     X, Y = dataset['features'], dataset['labels']
 
+    max_acc = 0.0
     for epoch in tqdm(range(args.epochs)):
 
         optimiser.zero_grad()
@@ -37,8 +38,13 @@ def train(HyperGCN, dataset, T, t, args):
         optimiser.step()
 
         if epoch % 10 == 0:
-            acc = test(HyperGCN, dataset, t, args)
-            print("epoch:", epoch, "loss:", float(loss), "accuracy:", float(acc), ", error:", float(100*(1-acc)))
+            acc = valid(HyperGCN, dataset, v, args)
+
+            print("epoch:", epoch, "loss:", float(loss), "accuracy:", float(acc), ", error:", float(100*(1-acc)), ", best accuracy:", float(max_acc))
+
+            if float(acc) > max_acc:
+                max_acc = float(acc)
+                torch.save(HyperGCN['model'].state_dict(), f'results/{args.result}-best-model.pth')
             # torch.save(HyperGCN['model'].state_dict(), f'{args.result}-{epoch}.pth')
             
             f= open(f'results/{args.result}-vaild_acc.txt',"a")
@@ -49,6 +55,28 @@ def train(HyperGCN, dataset, T, t, args):
     return HyperGCN
 
 
+
+def valid(HyperGCN, dataset, v, args):
+    """
+    valid HyperGCN
+    
+    arguments:
+	HyperGCN: a dictionary containing model details (gcn)
+	dataset: the entire dataset
+	t: test indices
+	args: arguments
+
+	returns:
+	accuracy of predictions    
+    """
+    
+    hypergcn = HyperGCN['model']
+    hypergcn.eval()
+    X, Y = dataset['features'], dataset['labels']
+    
+    Z = hypergcn(X) 
+    return accuracy(Z[v], Y[v])
+    
 
 def test(HyperGCN, dataset, t, args):
     """
@@ -68,10 +96,14 @@ def test(HyperGCN, dataset, t, args):
     hypergcn.eval()
     X, Y = dataset['features'], dataset['labels']
     
-
     Z = hypergcn(X) 
-    return accuracy(Z[t], Y[t])
-    
+
+    pred_dict = {}
+    for tid in t:
+        pred_dict[tid] = (Z[tid].argmax().item(), max(F.softmax(Z[tid], dim=0)).item())
+        
+    return pred_dict
+
 
 
 def accuracy(Z, Y):
