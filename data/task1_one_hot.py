@@ -6,6 +6,7 @@ import multiprocessing
 import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy.sparse as sp
+from sklearn.decomposition import PCA
 
 ##### Configuration
 n_clusters = 2000  # You can adjust this number based on your needs
